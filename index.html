@@ -27,6 +27,11 @@
 
 
 <style>
+
+body {
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
 #map_container { 
   /* position: absolute; */
   top: 0;
@@ -37,17 +42,6 @@
   z-index: 1000;
   padding: 10px;}
 
-#selector_container {
-  /* position: absolute; */
-  top: 0;
-  left: 0;
-  width: 30vw;
-  height: 100vh;
-  background: #fff;
-  z-index: 1000;
-  padding: 10px;
-}
-
 #select_radius {
   height: 10px;
 }
@@ -55,6 +49,8 @@
 #results{
   overflow: auto;
 }
+
+/* Zip code containers inside map */
 
 span.my-div-icon {
   position: absolute;
@@ -86,35 +82,125 @@ span.my-div-icon:after {
   left: 20px;
 }
 
-.js-example-basic-single{
-  width : 25vw;
+/* Overall app and center containers */
+
+@media screen and (max-width: 999px) {
+  #app {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width : 100%;
 }
+
+#center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#map_container { 
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50vh;
+  background: #fff;
+  z-index: 1000;
+  padding: 10px;}
+
+#selector_container {
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50vh;
+  background: #fff;
+  z-index: 1000;
+  padding: 15px;
+}
+}
+
+@media screen and (min-width: 1000px) {
+  #app {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width : 1000px;
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#map_container { 
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 700px;
+  height: 80vh;
+  background: #fff;
+  z-index: 1000;
+  padding: 10px;}
+
+#selector_container {
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 400px;
+  height: 100vh;
+  background: #fff;
+  z-index: 1000;
+  padding: 15px;
+}
+}
+
+
+
 
 </style>
 </head>
 
 <body>
 
-    <div style="display:flex">
+  <div id="center">
+    <div id="app">
 
-      <div id="selector_container" style="width: 35%">
+      <div id="selector_container" 
+      style="display: flex; flex-direction: column">
           
         <h1>Find Zip Codes</h1>
 
-        <div style="display: flex">
-          <div style="width: 33%">
-            Distance (miles)
-            <select id="select_radius"></select>
+        <div style='width: 100%'>
+          <div style="display: flex">
+            <div style="width: 35%">
+              Distance (miles)
+            </div>
+            <div style="width: 25%;"></div>
+            <div style="width: 35%">
+              Zip Code
+            </div>  
           </div>
-          <div style="width: 33%; 
-            display: flex;
-            justify-content: center;
-            align-items: center;">
-            around 
-          </div>
-          <div style="width: 33%">
-            Zip Code
-            <select id="select_zip"></select>
+        </div>
+        
+
+        <div style='width: 100%'>
+          <div style="display: flex">
+            <div style="width: 35%">
+              <select id="select_radius"></select>
+            </div>
+            <div style="width: 25%; 
+              display: flex;
+              justify-content: center;
+              align-items: center;">
+              around 
+            </div>
+            <div style="width: 35%">
+              <select id="select_zip"></select>
+            </div>
           </div>
         </div>
 
@@ -126,9 +212,10 @@ span.my-div-icon:after {
 
       </div>
 
-      <div id="map_container"></div> 
+    <div id="map_container"></div> 
 
     </div>
+  </div>
 <!--  -->
 <!-- Format zip selector -->
 <!--  -->
