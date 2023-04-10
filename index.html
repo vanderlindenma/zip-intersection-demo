@@ -1,135 +1,411 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0080)file:///Users/martinvanderlinden/Documents/Github_repos/zip_code_demo/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-        crossorigin=""/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src='zip_points.js'></script>
-    <!-- <script src="leaflet.ajax.min.js"></script> -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+      integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+      integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <!-- Data -->
+    <script src="zip_points.js"></script>
 
 
-    <style>
-        #map { height: 90vh;}
+<style>
+#map_container { 
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80vh;
+  background: #fff;
+  z-index: 1000;
+  padding: 10px;}
 
-        /* Switch button  https://codepen.io/alvarotrigo/pen/YzEdrKj*/ 
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
+#selector_container {
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 30vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 1000;
+  padding: 10px;
 }
 
-body {
-  font-family: -apple-system, ".SFNSText-Regular", "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
+#select_radius {
+  height: 10px;
 }
 
-.toggle {
-  cursor: pointer;
-  display: inline-block;
+#results{
+  overflow: auto;
 }
 
-.toggle-switch {
-  display: inline-block;
-  background: #ccc;
-  border-radius: 16px;
-  width: 58px;
-  height: 32px;
-  position: relative;
-  vertical-align: middle;
-  transition: background 0.25s;
+span.my-div-icon {
+  position: absolute;
+  opacity: 0.7;
+  width: 40px;
+  height: 20px;
+  line-height: 20px;
+  padding: 5px;
+  font-size: 14px;
+  text-align: center;
+  /* color: rgb(113, 157, 171); */
+  background: rgb(255, 255, 255);
+  border: 4px solid rgb(255, 255, 255);
+  border-radius: 5px;
+  /* text-shadow: rgba(0, 0, 0, 0.1) 1px 1px 1px; */
+  /* box-shadow: rgba(0, 0, 0, 0.1) 1px 1px 2px 0px; */
 }
-.toggle-switch:before, .toggle-switch:after {
+
+span.my-div-icon:after {
   content: "";
-}
-.toggle-switch:before {
-  display: block;
-  background: linear-gradient(to bottom, #fff 0%, #eee 100%);
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
-  width: 24px;
-  height: 24px;
   position: absolute;
-  top: 4px;
-  left: 4px;
-  transition: left 0.25s;
-}
-.toggle:hover .toggle-switch:before {
-  background: linear-gradient(to bottom, #fff 0%, #fff 100%);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
-}
-.toggle-checkbox:checked + .toggle-switch {
-  background: #56c080;
-}
-.toggle-checkbox:checked + .toggle-switch:before {
-  left: 30px;
+  opacity: 0.7;
+  width: 0;
+  height: 0;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #FFFFFF transparent transparent transparent;
+  top: 33px;
+  left: 20px;
 }
 
-.toggle-checkbox {
-  position: absolute;
-  visibility: hidden;
+.js-example-basic-single{
+  width : 25vw;
 }
 
-.toggle-label {
-  margin-left: 5px;
-  position: relative;
-  top: 2px;
-}
-
-
-    </style>
+</style>
 </head>
+
 <body>
-    <div id="map"></div>
-    <script>
 
-        // Create a Leaflet map centered on the U.S.
-        var map = L.map('map').setView([34.09368851200003, -84.61679102699998], 12);
+    <div style="display:flex">
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-          maxZoom: 18,
-        }).addTo(map);
+      <div id="selector_container" style="width: 35%">
+          
+        <h1>Find Zip Codes</h1>
 
-        centerCoordinates = [-84.61679102699998, 34.09368851200003]
+        <div style="display: flex">
+          <div style="width: 33%">
+            Distance (miles)
+            <select id="select_radius"></select>
+          </div>
+          <div style="width: 33%; 
+            display: flex;
+            justify-content: center;
+            align-items: center;">
+            around 
+          </div>
+          <div style="width: 33%">
+            Zip Code
+            <select id="select_zip"></select>
+          </div>
+        </div>
 
-        circle = turf.circle(centerCoordinates , 10)
+        <button id="search" onclick="clickButton()" style="margin-top: 10px; margin-bottom: 10px; padding: 2px; width: 100%"> Search</button>
 
-        coordinates = zip_points.features.map(d => d.geometry.coordinates)
+        <div id="results" style="margin-top: 10px; margin-bottom: 10px; padding: 2px; width: 100%"></div>
 
-        console.log(coordinates)
+        <button id="copy" onclick="copyToClipboard()" style="margin-top: 10px; margin-bottom: 10px; padding: 2px; width: 100%"> Copy Zip Codes to Clipboard</button>
 
-        zip_turf = turf.points(coordinates)
+      </div>
 
-        const ptsWithin = turf.pointsWithinPolygon(zip_turf, circle);
+      <div id="map_container"></div> 
 
-        ptswithcoord = ptsWithin.features.map(d => d.geometry.coordinates)
-        included_features = zip_points.features.filter(d =>   ptswithcoord.includes(d.geometry.coordinates))
+    </div>
+<!--  -->
+<!-- Format zip selector -->
+<!--  -->
 
-        console.log(included_features)
+<script>
+  const zip_list = zip_points.features.map((d,i) => ({id: i, text: d.properties.STD_ZIP5}))
 
-        var myStyle = {
-            "color": "red",
-            "className": "intersection"
-        };
+  const select_list = zip_list
 
-        L.geoJSON(circle).addTo(map)
+  $('#select_zip').selectize({
+    maxItems: 1,
+    valueField: 'id',
+    labelField: 'text',
+    searchField: 'text',
+    options: zip_list,
+    create: false
+  });
 
-        L.geoJSON(included_features, {
-          onEachFeature: function(feature, layer) {
-              layer.bindTooltip(
-                JSON.stringify(feature.properties.STD_ZIP5),
-                {permanent: true, className: "my-label", offset: [0, 0] }
-                );
-          }
-        }).addTo(map);
+  var $select = $('#select_zip').selectize();  // This initializes the selectize control
+  var selectize = $select[0].selectize;
+  selectize.setValue(selectize.search(30102).items[0].id);
+</script>
+  
+<!--  -->
+<!-- Format radius selector -->
+<!--  -->
 
-    </script>
+<script>
+    $('#select_radius').selectize({
+    maxItems: 1,
+    valueField: 'id',
+    labelField: 'text',
+    options: [
+      {id: 1, text:'1', selected: true},
+      {id: 2, text: '2'},
+      {id: 3, text: '3'},
+      {id: 5, text: '5'},
+      {id: 7, text: '7'},
+      {id: 10, text: '10'},
+      {id: 15, text: '15'},
+      {id: 20, text: '20'},
+      {id: 25, text: '25'},
+      {id: 30, text: '30'}
+    ],
+    create: false
+  });
+
+  var $select = $('#select_radius').selectize();  // This initializes the selectize control
+  var selectize = $select[0].selectize;
+  selectize.setValue(selectize.search(10).items[0].id);
+</script>
+
+<!--  -->
+<!-- Generate map -->
+<!--  -->
+
+<script>
+
+    var map = L.map('map_container').setView([34.09368851200003, -84.61679102699998], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map);
+
+    //
+    // Edit Map
+    //
+
+    // Get zip code
+    const zip = $('#select_zip').val()
+    // console.log('zip', zip)
+    // const zip_code = zip 
+    const zip_code = zip_list[zip].text
+
+    // Get radius
+    const radius = $('#select_radius').val()
+    console.log('radius', radius)
+    const radius_miles = radius
+    // const radius_miles = select_list[radius].text
+
+    // Get coordinates
+    const zip_coord = zip_points.features.filter(d => d.properties.STD_ZIP5 == zip_code)[0].geometry.coordinates
+
+    // Generate circle
+    centerCoordinates = zip_coord
+    circle = turf.circle(centerCoordinates , radius_miles,
+                        {steps: 100, units: 'miles'})
+
+    // Get points within circle
+    coordinates = zip_points.features.map(d => d.geometry.coordinates)
+    zip_turf = turf.points(coordinates)
+    const ptsWithin = turf.pointsWithinPolygon(zip_turf, circle);
+
+    // Get zip codes within circle
+    ptswithcoord = ptsWithin.features.map(d => d.geometry.coordinates)
+    included_features = zip_points.features.filter(d => ptswithcoord.includes(d.geometry.coordinates))
+
+    // Remove old circle
+    map.eachLayer(function (layer) {
+      if (layer.options.className == 'intersection') {
+        map.removeLayer(layer);
+      }
+    });
+
+    $( ".intersection" ).remove();
+    $( ".my-div-icon" ).remove();
+
+    // Add new circle
+    var myStyle = {
+        "color": "red",
+        "className": "intersection"
+    };
+
+    let circleL = L.geoJSON(circle, {style : myStyle}).addTo(map)
+
+    // Add new points
+    let pointsL = L.geoJSON(included_features, {
+
+      pointToLayer: function (feature, latlng) {
+
+        var myIcon = L.divIcon({
+          html: `<span class = 'my-div-icon'> ${feature.properties.STD_ZIP5} </span>`
+          ,className: 'my-div-icon'
+        });
+
+        return L.marker(latlng, {icon: myIcon});
+      }
+    }).addTo(map);
+  
+  
+  // Re-center/zoom map
+
+  map.panTo(new L.LatLng(zip_coord[1], zip_coord[0]))
+
+  var group = new L.featureGroup([pointsL, circleL]);
+
+  map.fitBounds(group.getBounds());  
+
+  //
+  // Edit Zip list
+  //
+
+  // Erase previous content from the "#result" div and replace it with the zip codes in included_features in the form of an ordered list without bullet points
+  $("#results").empty();
+  // $("#results").append("<ol style = 'list-style: none'></ol>");
+  included_features.forEach(function(d) {
+    // $("#results ol").append("<li>" + d.properties.STD_ZIP5 + "</li>");
+    $("#results").append( d.properties.STD_ZIP5 + "</br>");
+  });
+
+  // Set length of the "#result" div to size of the list if contains, except if that list is more than 300px
+  $("#results").css("height", Math.min($("#results").height(), 300) + "px");
+</script>
+
+<!--  -->
+<!-- React to new search -->
+<!--  -->
+
+<script>
+  
+  function clickButton(){
+
+    //
+    // Edit Map
+    //
+
+    // Get zip code
+    const zip = $('#select_zip').val()
+    // console.log('zip', zip)
+    // const zip_code = zip 
+    const zip_code = zip_list[zip].text
+
+    // Get radius
+    const radius = $('#select_radius').val()
+    console.log('radius', radius)
+    const radius_miles = radius
+    // const radius_miles = select_list[radius].text
+
+    // Get coordinates
+    const zip_coord = zip_points.features.filter(d => d.properties.STD_ZIP5 == zip_code)[0].geometry.coordinates
+
+    // Generate circle
+    centerCoordinates = zip_coord
+    circle = turf.circle(centerCoordinates , radius_miles,
+                        {steps: 100, units: 'miles'})
+
+    // Get points within circle
+    coordinates = zip_points.features.map(d => d.geometry.coordinates)
+    zip_turf = turf.points(coordinates)
+    const ptsWithin = turf.pointsWithinPolygon(zip_turf, circle);
+
+    // Get zip codes within circle
+    ptswithcoord = ptsWithin.features.map(d => d.geometry.coordinates)
+    included_features = zip_points.features.filter(d => ptswithcoord.includes(d.geometry.coordinates))
+
+    // Remove old circle
+    map.eachLayer(function (layer) {
+      if (layer.options.className == 'intersection') {
+        map.removeLayer(layer);
+      }
+    });
+
+    $( ".intersection" ).remove();
+    $( ".my-div-icon" ).remove();
+
+    // Add new circle
+    var myStyle = {
+        "color": "red",
+        "className": "intersection"
+    };
+
+    let circleL = L.geoJSON(circle, {style : myStyle}).addTo(map)
+
+    // Add new points
+    let pointsL = L.geoJSON(included_features, {
+
+      pointToLayer: function (feature, latlng) {
+
+        var myIcon = L.divIcon({
+          html: `<span class = 'my-div-icon'> ${feature.properties.STD_ZIP5} </span>`
+          ,className: 'my-div-icon'
+        });
+
+        return L.marker(latlng, {icon: myIcon});
+      }
+    }).addTo(map);
+  
+  
+  // Re-center/zoom map
+
+  map.panTo(new L.LatLng(zip_coord[1], zip_coord[0]))
+
+  var group = new L.featureGroup([pointsL, circleL]);
+
+  map.fitBounds(group.getBounds());  
+
+  //
+  // Edit Zip list
+  //
+
+  // Erase previous content from the "#result" div and replace it with the zip codes in included_features in the form of an ordered list without bullet points
+  $("#results").empty();
+  // $("#results").append("<ol style = 'list-style: none'></ol>");
+  included_features.forEach(function(d) {
+    // $("#results ol").append("<li>" + d.properties.STD_ZIP5 + "</li>");
+    $("#results").append( d.properties.STD_ZIP5 + "</br>");
+  });
+
+  // Set length of the "#result" div to size of the list if contains, except if that list is more than 300px
+  $("#results").css("height", Math.min($("#results").height(), 300) + "px");
+
+  }
+</script>
+
+<!--  -->
+<!-- Copy to clipboard -->
+<!--  -->
+
+<!-- Copy to content of the list in "results" to clipboard after click on copy to clipboard button -->
+
+<script>
+  function copyToClipboard() {
+    // var copyText = document.getElementById("results");
+    // copyText.select();
+    // copyText.setSelectionRange(0, 99999)
+    // document.execCommand("copy");
+
+    var range = document.createRange();
+    range.selectNode(document.getElementById("results"));
+    window.getSelection().removeAllRanges(); // clear current selection
+    window.getSelection().addRange(range); // to select text
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();// to deselect
+  }
+</script>
+
 
 </body>
 </html>
